@@ -1,12 +1,13 @@
 {
-  "name": "My Bookmarks",
-  "version": "1.1",
-  "description": "A browser action with a popup dump of all bookmarks, including search, add, edit and delete.",
+  "name": "Tabivoro",
+  "version": "0.1",
+  "description": "A tab management extension that will eat your tabs.",
   "permissions": [
-    "bookmarks"
+    "storage",
+    "tabs"
   ],
   "browser_action": {
-      "default_title": "My Bookmarks",
+      "default_title": "Tabivoro",
       "default_icon": "icon.png",
       "default_popup": "popup.html"
   },
