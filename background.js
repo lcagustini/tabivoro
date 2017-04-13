@@ -36,8 +36,6 @@ function init()
     });
 };
 
-//TODO: Updated globalTabs on change and remove
-
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
     for(let tabi in globalTabs){
         if(globalTabs[tabi].id === tabId){
