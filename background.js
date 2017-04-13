@@ -36,7 +36,23 @@ function init()
     });
 };
 
-//TODO: Updated globalTabs on add and remove
+//TODO: Updated globalTabs on change and remove
+
+chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
+    
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId, info){
+    for(let tab in globalTabs){
+        if(globalTabs[tab].id === tabId)
+            delete globalTabs[tab];
+    }
+});
+
+chrome.tabs.onCreated.addListener(function(tab){
+    tab.time = 0;
+    globalTabs[tab.url] = tab;
+});
 
 chrome.tabs.onActivated.addListener(function(info) {
     //TODO: handle ID changes when browser closes
