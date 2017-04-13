@@ -37,6 +37,7 @@ var globalT = 0;
 
 function update()
 {
+    console.log(chrome.extension.getBackgroundPage());
     var d = new Date();
     var t = d.getTime();
 
@@ -68,7 +69,7 @@ function update()
 
         let el = document.createElement('label');
         el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 40px";
-        let textNode = document.createTextNode(globalTabs[tab].url);
+        let textNode = document.createTextNode(globalTabs[tab].title);
         el.appendChild(textNode);
         urls.appendChild(el);
 
