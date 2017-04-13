@@ -4,21 +4,9 @@ $(function() {
   });
 });
 
-var globalT = 0;
-
 function update()
 {
-    var globalTabs = chrome.extension.getBackgroundPage().getGlobalTabs();
-
-    console.log(chrome.extension.getBackgroundPage());
-    var d = new Date();
-    var t = d.getTime();
-
-    if(globalT === 0)
-        globalT = t;
-
-    var dt = t - globalT;
-    globalT = t;
+    let globalTabs = chrome.extension.getBackgroundPage().getGlobalTabs();
 
     let urls = document.getElementById('urls');
     let cNode = urls.cloneNode(false);
@@ -35,11 +23,7 @@ function update()
     icons.parentNode.replaceChild(cNode, icons);
     icons = cNode;
 
-    for(let tab in globalTabs){
-        if(!globalTabs[tab].active){
-            globalTabs[tab].time += dt / 1000;
-        };
-
+    for(let tab in globalTabs) {
         let el = document.createElement('label');
         el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 40px";
         let textNode = document.createTextNode(globalTabs[tab].title);
@@ -62,4 +46,4 @@ function update()
     setTimeout(update, 1000);
 };
 
-window.onload = init;
+window.onload = update;

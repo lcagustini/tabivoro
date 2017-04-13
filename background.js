@@ -1,4 +1,25 @@
-var globalTabs = {};
+let globalTabs = {};
+let globalT = 0;
+
+function update()
+{
+    let d = new Date();
+    let t = d.getTime();
+
+    if(globalT === 0)
+        globalT = t;
+
+    let dt = t - globalT;
+    globalT = t;
+
+    for(let tab in globalTabs){
+        if(!globalTabs[tab].active) {
+            globalTabs[tab].time += dt / 1000;
+        }
+    };
+
+    setTimeout(update, 1000);
+};
 
 function init()
 {
@@ -22,11 +43,15 @@ chrome.tabs.onActivated.addListener(function(info) {
     for(let tab in globalTabs){
         globalTabs[tab].active = false;
         if(globalTabs[tab].id === info.tabId)
+        {
             globalTabs[tab].active = true;
             globalTabs[tab].time = 0;
+        }
     };
 });
 
 function getGlobalTabs(){
     return globalTabs;
 };
+
+window.onload = init;
