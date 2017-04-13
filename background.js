@@ -39,7 +39,13 @@ function init()
 //TODO: Updated globalTabs on change and remove
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
-    
+    for(let tabi in globalTabs){
+        if(globalTabs[tabi].id === tabId){
+            tab.time = globalTabs[tabi].time;
+            delete globalTabs[tabi];
+            globalTabs[tab.url] = tab;
+        }
+    }
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info){
