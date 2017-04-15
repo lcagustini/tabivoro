@@ -13,8 +13,12 @@ function update()
     globalT = t;
 
     for(let tab in globalTabs){
-        if(!globalTabs[tab].active) {
+        if(!globalTabs[tab].active)
             globalTabs[tab].time += dt / 1000;
+
+        if(globalTabs[tab].time > 20){
+            globalTabs[tab].onWindow = false;
+            chrome.tabs.remove(parseInt(tab), function(){});
         }
     };
 
@@ -24,11 +28,12 @@ function update()
 function init()
 {
     // initialize tabs
-    //TODO: restore time when browser reopens
+    //TODO: restore time when browser reonWindows
     chrome.tabs.query({}, function(tabs){
         for(let tab of tabs){
             tab.time = 0;
-            globalTabs[tab.url] = tab;
+            tab.onWindow = true;
+            globalTabs[tab.id] = tab;
         };
 
         // then start updating
@@ -36,26 +41,30 @@ function init()
     });
 };
 
+//FIXME: doesn't work everytime user changes website
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
     for(let tabi in globalTabs){
-        if(globalTabs[tabi].id === tabId){
+        if(tabi == tabId){
             tab.time = globalTabs[tabi].time;
+            tab.onWindow = globalTabs[tabi].onWindow;
             delete globalTabs[tabi];
-            globalTabs[tab.url] = tab;
+            globalTabs[tab.id] = tab;
         }
     }
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info){
     for(let tab in globalTabs){
-        if(globalTabs[tab].id === tabId)
-            delete globalTabs[tab];
+        if(tab == tabId)
+            if(globalTabs[tab].onWindow)
+                delete globalTabs[tab];
     }
 });
 
 chrome.tabs.onCreated.addListener(function(tab){
     tab.time = 0;
-    globalTabs[tab.url] = tab;
+    tab.onWindow = true;
+    globalTabs[tab.id] = tab;
 });
 
 chrome.tabs.onActivated.addListener(function(info) {

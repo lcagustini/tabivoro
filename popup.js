@@ -27,7 +27,10 @@ function update()
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
             let el = document.createElement('label');
-            el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
+            if(globalTabs[tab].onWindow)
+                el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
+            else
+                el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px; color: red;";
             let textNode = document.createTextNode(globalTabs[tab].title);
             el.appendChild(textNode);
             urls.appendChild(el);
