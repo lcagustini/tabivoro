@@ -83,4 +83,15 @@ function getGlobalTabs(){
     return globalTabs;
 };
 
+function iconClick(tab){
+    let options = {}
+    options.url = globalTabs[tab].url;
+    chrome.tabs.create(options, function(tabn){
+        tabn.time = 0;
+        tabn.onWindow = true;
+        globalTabs[tabn.id] = tabn;
+        delete globalTabs[tab]
+    })
+};
+
 window.onload = init;

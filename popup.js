@@ -14,7 +14,8 @@ function formatSeconds(seconds){
 
 function update()
 {
-    let globalTabs = chrome.extension.getBackgroundPage().getGlobalTabs();
+    let bsPage = chrome.extension.getBackgroundPage();
+    let globalTabs = bsPage.getGlobalTabs();
 
     let urls = document.getElementById('urls');
     let times = document.getElementById('times');
@@ -39,6 +40,7 @@ function update()
             let icon_url = globalTabs[tab].favIconUrl;
             if (icon_url) el.style = "background-position: top; background-image: url(" + icon_url + "); float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; background-size: 20px; background-repeat: no-repeat; margin-bottom: 5px;";
             else el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
+            el.id = tab;
             icons.appendChild(el);
 
             el = document.createElement('label');
@@ -47,6 +49,9 @@ function update()
             el.appendChild(textNode);
             times.appendChild(el);
         }
+        $('#'+tab).click(function(){
+            bsPage.iconClick(tab);
+        });
     };
 
     setTimeout(update, 1000);
