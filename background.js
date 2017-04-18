@@ -12,11 +12,15 @@ function update()
     let dt = t - globalT;
     globalT = t;
 
+    let badge = {};
+    badge.text = Object.keys(globalTabs).length.toString();
+    chrome.browserAction.setBadgeText(badge);
+
     for(let tab in globalTabs){
         if(!globalTabs[tab].active)
             globalTabs[tab].time += dt / 1000;
 
-        if(globalTabs[tab].time > 20){
+        if(globalTabs[tab].time > 20 && globalTabs[tab].onWindow){
             globalTabs[tab].onWindow = false;
             chrome.tabs.remove(parseInt(tab), function(){});
         }
@@ -28,7 +32,7 @@ function update()
 function init()
 {
     // initialize tabs
-    //TODO: restore time when browser reonWindows
+    //TODO: restore time when browser reopens
     chrome.tabs.query({}, function(tabs){
         for(let tab of tabs){
             tab.time = 0;
