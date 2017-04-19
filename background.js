@@ -5,6 +5,24 @@ function getGlobalTabs(){
     return globalTabs;
 };
 
+function on_clicked(id) {
+    if (globalTabs[id].onWindow)
+    {
+        chrome.tabs.update(globalTabs[id].id, {active: true});
+    }
+    else
+    {
+        let options = {}
+        options.url = globalTabs[id].url;
+        chrome.tabs.create(options, function(tabn){
+            tabn.time = 0;
+            tabn.onWindow = true;
+            globalTabs[tabn.id] = tabn;
+            delete globalTabs[id];
+        });
+    }
+};
+
 function update()
 {
     let d = new Date();
@@ -73,47 +91,6 @@ function get_duplicated_tab(tab)
     return null;
 };
 
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
-
-    // wait for page to load completely
-    if (info.status !== 'loading' && info.status !== 'complete') return;
-
-    // if tab was closed already, do nothing
-    if (!globalTabs[tabId]) return;
-
-    // otherwise, update stored tab data
-    tab.time = globalTabs[tabId].time;
-    tab.onWindow = globalTabs[tabId].onWindow;
-    delete globalTabs[tabId];
-    globalTabs[tabId] = tab;
-
-    // handle duplication
-    delete_old_tabs_with_same_url(tab);
-    let duplicate = get_duplicated_tab(tab);
-    if (duplicate !== null)
-    {
-        // TODO: create a function to switch tab, stop using this everywhere
-        chrome.tabs.update(duplicate.id, {active: true});
-        close_tab(tab);
-        delete globalTabs[tabId];
-    }
-});
-
-chrome.tabs.onRemoved.addListener(function(tabId, info){
-    for(let tab in globalTabs){
-        if(globalTabs[tab].id === tabId)
-        {
-            // if user has manually closed it, let it go
-            if(globalTabs[tab].onWindow)
-                delete globalTabs[tab];
-
-            // also let it go if we closed it but it is a local tab
-            else if(globalTabs[tab].url.includes('chrome://'))
-                delete globalTabs[tab];
-        }
-    }
-});
-
 // NOTE: this doesn't remove the tag from `globalTags`
 // if you want the tab to be removed you should do so manually
 // this behavior is intended (not a bug)
@@ -175,6 +152,47 @@ function store_new_tab(tab)
     }
 };
 
+chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
+
+    // wait for page to load completely
+    if (info.status !== 'loading' && info.status !== 'complete') return;
+
+    // if tab was closed already, do nothing
+    if (!globalTabs[tabId]) return;
+
+    // otherwise, update stored tab data
+    tab.time = globalTabs[tabId].time;
+    tab.onWindow = globalTabs[tabId].onWindow;
+    delete globalTabs[tabId];
+    globalTabs[tabId] = tab;
+
+    // handle duplication
+    delete_old_tabs_with_same_url(tab);
+    let duplicate = get_duplicated_tab(tab);
+    if (duplicate !== null)
+    {
+        // TODO: create a function to switch tab, stop using this everywhere
+        chrome.tabs.update(duplicate.id, {active: true});
+        close_tab(tab);
+        delete globalTabs[tabId];
+    }
+});
+
+chrome.tabs.onRemoved.addListener(function(tabId, info){
+    for(let tab in globalTabs){
+        if(globalTabs[tab].id === tabId)
+        {
+            // if user has manually closed it, let it go
+            if(globalTabs[tab].onWindow)
+                delete globalTabs[tab];
+
+            // also let it go if we closed it but it is a local tab
+            else if(globalTabs[tab].url.includes('chrome://'))
+                delete globalTabs[tab];
+        }
+    }
+});
+
 chrome.tabs.onCreated.addListener((tab) => store_new_tab(tab));
 
 chrome.tabs.onReplaced.addListener(function(added_tab_id, removed_tab_id) {
@@ -193,23 +211,5 @@ chrome.tabs.onActivated.addListener(function(info) {
         }
     };
 });
-
-function iconClick(tab){
-    if (globalTabs[tab].onWindow)
-    {
-        chrome.tabs.update(globalTabs[tab].id, {active: true});
-    }
-    else
-    {
-        let options = {}
-        options.url = globalTabs[tab].url;
-        chrome.tabs.create(options, function(tabn){
-            tabn.time = 0;
-            tabn.onWindow = true;
-            globalTabs[tabn.id] = tabn;
-            delete globalTabs[tab];
-        });
-    }
-};
 
 window.onload = init;

@@ -7,7 +7,7 @@ $(function() {
 });
 
 function formatSeconds(seconds){
-    var date = new Date(1970,0,1);
+    let date = new Date(1970,0,1);
     date.setSeconds(seconds);
     return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, "$1");
 }
@@ -57,7 +57,7 @@ function update()
             row.onmouseout = function() { this.style.backgroundColor = "#ffbb77"; }
         }
         $('#'+tab).click(function(){
-            bsPage.iconClick(tab);
+            bsPage.on_clicked(tab);
         });
     };
 
