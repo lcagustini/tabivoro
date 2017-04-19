@@ -28,7 +28,7 @@ function update()
 
             let el = document.createElement('label');
             let icon_url = globalTabs[tab].favIconUrl;
-            if (icon_url && !(icon_url.includes('chrome'))) el.style = "display: table-cell; background-position: top; background-image: url(" + icon_url + "); min-width: 30px; height: 22px; background-size: 22px; background-repeat: no-repeat;";
+            if (icon_url && !(icon_url.includes('chrome://'))) el.style = "display: table-cell; background-position: top; background-image: url(" + icon_url + "); min-width: 30px; height: 22px; background-size: 22px; background-repeat: no-repeat;";
             else el.style = "display: table-cell; min-width: 30px; height: 22px;";
             row.appendChild(el);
 

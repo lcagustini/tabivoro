@@ -50,7 +50,7 @@ function init()
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
 
     // wait for page to load completely
-    if (info.status !== 'complete') return;
+    if (info.status !== 'loading' && info.status !== 'complete') return;
 
     for(let tabi in globalTabs){
         if(tabi == tabId){
@@ -69,6 +69,10 @@ chrome.tabs.onRemoved.addListener(function(tabId, info){
         {
             // if user has manually closed it, let it go
             if(globalTabs[tab].onWindow)
+                delete globalTabs[tab];
+
+            // also let it go if we closed it but it is a local tab
+            else if(globalTabs[tab].url.includes('chrome://'))
                 delete globalTabs[tab];
         }
     }
@@ -141,14 +145,21 @@ function getGlobalTabs(){
 };
 
 function iconClick(tab){
-    let options = {}
-    options.url = globalTabs[tab].url;
-    chrome.tabs.create(options, function(tabn){
-        tabn.time = 0;
-        tabn.onWindow = true;
-        globalTabs[tabn.id] = tabn;
-        delete globalTabs[tab]
-    })
+    if (globalTabs[tab].onWindow)
+    {
+        chrome.tabs.update(parseInt(tab), {active: true});
+    }
+    else
+    {
+        let options = {}
+        options.url = globalTabs[tab].url;
+        chrome.tabs.create(options, function(tabn){
+            tabn.time = 0;
+            tabn.onWindow = true;
+            globalTabs[tabn.id] = tabn;
+            delete globalTabs[tab]
+        });
+    }
 };
 
 window.onload = init;
