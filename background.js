@@ -3,7 +3,7 @@ let globalT = 0;
 
 function getGlobalTabs(){
     return globalTabs;
-};
+}
 
 function on_clicked(id) {
     if (globalTabs[id].onWindow)
@@ -12,7 +12,7 @@ function on_clicked(id) {
     }
     else
     {
-        let options = {}
+        let options = {};
         options.url = globalTabs[id].url;
         chrome.tabs.create(options, function(tabn){
             tabn.time = 0;
@@ -21,7 +21,7 @@ function on_clicked(id) {
             delete globalTabs[id];
         });
     }
-};
+}
 
 function update()
 {
@@ -48,10 +48,10 @@ function update()
             close_tab(globalTabs[tab]);
             globalTabs[tab].onWindow = false;
         }
-    };
+    }
 
     setTimeout(update, 1000);
-};
+}
 
 function init()
 {
@@ -62,12 +62,12 @@ function init()
             tab.time = 0;
             tab.onWindow = true;
             globalTabs[tab.id] = tab;
-        };
+        }
 
         // then start updating
         update();
     });
-};
+}
 
 function get_duplicated_tab(tab)
 {
@@ -89,7 +89,7 @@ function get_duplicated_tab(tab)
     }
 
     return null;
-};
+}
 
 // NOTE: this doesn't remove the tag from `globalTags`
 // if you want the tab to be removed you should do so manually
@@ -108,7 +108,7 @@ function close_tab(tab)
         close_tab(tab);
         setTimeout(close_tab.bind(tab), 500);
     }
-};
+}
 
 function delete_old_tabs_with_same_url(tab)
 {
@@ -131,7 +131,7 @@ function delete_old_tabs_with_same_url(tab)
             }
         }
     }
-};
+}
 
 function store_new_tab(tab)
 {
@@ -150,7 +150,7 @@ function store_new_tab(tab)
         close_tab(tab);
         delete globalTabs[tab.id];
     }
-};
+}
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 
@@ -209,7 +209,7 @@ chrome.tabs.onActivated.addListener(function(info) {
             globalTabs[tab].active = true;
             globalTabs[tab].time = 0;
         }
-    };
+    }
 });
 
 window.onload = init;
