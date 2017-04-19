@@ -17,37 +17,44 @@ function update()
     let bsPage = chrome.extension.getBackgroundPage();
     let globalTabs = bsPage.getGlobalTabs();
 
-    let urls = document.getElementById('urls');
-    let times = document.getElementById('times');
-    let icons = document.getElementById('icons');
+    let list = document.getElementById('list');
 
-    urls.innerHTML = '';
-    times.innerHTML = '';
-    icons.innerHTML = '';
+    list.innerHTML = '';
 
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
+            let row = document.createElement('div');
+            row.style = 'width: 100%; height: 22px; display: table-row;';
+
             let el = document.createElement('label');
+            let icon_url = globalTabs[tab].favIconUrl;
+            if (icon_url && !(icon_url.includes('chrome'))) el.style = "display: table-cell; background-position: top; background-image: url(" + icon_url + "); min-width: 30px; height: 22px; background-size: 22px; background-repeat: no-repeat;";
+            else el.style = "display: table-cell; min-width: 30px; height: 22px;";
+            row.appendChild(el);
+
+            let wrapper = document.createElement('div');
+            wrapper.style = "display: table-cell; width = 100%; height = 22px;";
+            el = document.createElement('label');
             if(globalTabs[tab].onWindow)
-                el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
+                el.style = "display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 250px; height: 22px; margin-top: 2px;";
             else
-                el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px; color: red;";
+                el.style = "display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 250px; height: 22px; color: red; margin-top: 2px;";
             let textNode = document.createTextNode(globalTabs[tab].title);
             el.appendChild(textNode);
-            urls.appendChild(el);
+            wrapper.appendChild(el);
+            row.appendChild(wrapper);
 
             el = document.createElement('label');
-            let icon_url = globalTabs[tab].favIconUrl;
-            if (icon_url) el.style = "background-position: top; background-image: url(" + icon_url + "); float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; background-size: 20px; background-repeat: no-repeat; margin-bottom: 5px;";
-            else el.style = "float: left; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
-            el.id = tab;
-            icons.appendChild(el);
-
-            el = document.createElement('label');
-            el.style = "text-align: right; float: right; white-space: nowrap; overflow: hidden; width: 100%; height: 20px; margin-bottom: 5px;";
+            el.style = "display: table-cell; text-align: right; min-width: 90px !important; height: 22px; margin-top: 2px;";
             textNode = document.createTextNode(formatSeconds(Math.round(globalTabs[tab].time)));
             el.appendChild(textNode);
-            times.appendChild(el);
+            row.appendChild(el);
+
+            list.appendChild(row);
+
+            row.id = tab;
+            row.onmouseover = function() { this.style.backgroundColor = "#ee9955"; }
+            row.onmouseout = function() { this.style.backgroundColor = "#ffbb77"; }
         }
         $('#'+tab).click(function(){
             bsPage.iconClick(tab);
