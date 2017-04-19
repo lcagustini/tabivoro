@@ -12,6 +12,7 @@ function update()
     let dt = t - globalT;
     globalT = t;
 
+    // show how many tabs we're keeping track of
     let badge = {};
     badge.text = Object.keys(globalTabs).length.toString();
     chrome.browserAction.setBadgeText(badge);
@@ -20,9 +21,10 @@ function update()
         if(!globalTabs[tab].active)
             globalTabs[tab].time += dt / 1000;
 
-        if(globalTabs[tab].time > 20 && globalTabs[tab].onWindow){
+        if(globalTabs[tab].time > 20 && globalTabs[tab].onWindow)
+        {
+            close_tab(globalTabs[tab]);
             globalTabs[tab].onWindow = false;
-            chrome.tabs.remove(parseInt(tab), function(){});
         }
     };
 
@@ -45,14 +47,18 @@ function init()
     });
 };
 
-//FIXME: doesn't work everytime user changes website
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
+
+    // wait for page to load completely
+    if (info.status !== 'complete') return;
+
     for(let tabi in globalTabs){
         if(tabi == tabId){
             tab.time = globalTabs[tabi].time;
             tab.onWindow = globalTabs[tabi].onWindow;
             delete globalTabs[tabi];
             globalTabs[tab.id] = tab;
+            close_tabs_with_same_url(tab);
         }
     }
 });
@@ -60,15 +66,62 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
 chrome.tabs.onRemoved.addListener(function(tabId, info){
     for(let tab in globalTabs){
         if(tab == tabId)
+        {
+            // if user has manually closed it, let it go
             if(globalTabs[tab].onWindow)
                 delete globalTabs[tab];
+        }
     }
 });
 
-chrome.tabs.onCreated.addListener(function(tab){
+function close_tab(tab)
+{
+    try
+    {
+        chrome.tabs.remove(parseInt(tab.id), function(){});
+    }
+    catch (e)
+    {
+        console.log('Error trying to close tab, retrying...', e);
+        close_tab(tab);
+        setTimeout(close_tab.bind(tab), 500);
+    }
+};
+
+function close_tabs_with_same_url(tab)
+{
+    if (tab.url === 'chrome://newtab/') return;
+
+    for (let id in globalTabs)
+    {
+        if (globalTabs[id].url === tab.url && parseInt(id) !== tab.id)
+        {
+            if (globalTabs[id].onWindow === true)
+            {
+                close_tab(globalTabs[id]);
+            }
+            else
+            {
+                delete globalTabs[id];
+            }
+        }
+    }
+};
+
+function store_new_tab(tab)
+{
     tab.time = 0;
     tab.onWindow = true;
     globalTabs[tab.id] = tab;
+
+    close_tabs_with_same_url(tab);
+};
+
+chrome.tabs.onCreated.addListener((tab) => store_new_tab(tab));
+
+chrome.tabs.onReplaced.addListener(function(added_tab_id, removed_tab_id) {
+    delete globalTabs[removed_tab_id];
+    chrome.tabs.get(added_tab_id, (tab) => store_new_tab(tab));
 });
 
 chrome.tabs.onActivated.addListener(function(info) {
