@@ -86,7 +86,7 @@ function close_tab(tab)
     }
     catch (e)
     {
-        console.log('Error trying to close tab, retrying...', e);
+        console.error('Error trying to close tab, retrying...', e);
         close_tab(tab);
         setTimeout(close_tab.bind(tab), 500);
     }
