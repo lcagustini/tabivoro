@@ -1,6 +1,10 @@
 let globalTabs = {};
 let globalT = 0;
 
+function getGlobalTabs(){
+    return globalTabs;
+};
+
 function update()
 {
     let d = new Date();
@@ -47,25 +51,57 @@ function init()
     });
 };
 
-chrome.tabs.onUpdated.addListener(function(tabId, info, tab){
+function get_duplicated_tab(tab)
+{
+    // NOTE: this is a hack
+    // For some reason chrome is way to slow to send 'loading'
+    // notifications when trying to access a new url, this causes
+    // unwanted tabs to close when quickly opening a new tab after
+    // trying to go to a new site on a previous one
+    //
+    // This line fixes that problem by making an exception for 'newtabs'
+    if (tab.url === 'chrome://newtab/') return null;
+
+    for (let id in globalTabs)
+    {
+        if (globalTabs[id].url === tab.url && globalTabs[id].id !== tab.id)
+        {
+            return globalTabs[id];
+        }
+    }
+
+    return null;
+};
+
+chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 
     // wait for page to load completely
     if (info.status !== 'loading' && info.status !== 'complete') return;
 
-    for(let tabi in globalTabs){
-        if(tabi == tabId){
-            tab.time = globalTabs[tabi].time;
-            tab.onWindow = globalTabs[tabi].onWindow;
-            delete globalTabs[tabi];
-            globalTabs[tab.id] = tab;
-            close_tabs_with_same_url(tab);
-        }
+    // if tab was closed already, do nothing
+    if (!globalTabs[tabId]) return;
+
+    // otherwise, update stored tab data
+    tab.time = globalTabs[tabId].time;
+    tab.onWindow = globalTabs[tabId].onWindow;
+    delete globalTabs[tabId];
+    globalTabs[tabId] = tab;
+
+    // handle duplication
+    delete_old_tabs_with_same_url(tab);
+    let duplicate = get_duplicated_tab(tab);
+    if (duplicate !== null)
+    {
+        // TODO: create a function to switch tab, stop using this everywhere
+        chrome.tabs.update(duplicate.id, {active: true});
+        close_tab(tab);
+        delete globalTabs[tabId];
     }
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info){
     for(let tab in globalTabs){
-        if(tab == tabId)
+        if(globalTabs[tab].id === tabId)
         {
             // if user has manually closed it, let it go
             if(globalTabs[tab].onWindow)
@@ -78,33 +114,41 @@ chrome.tabs.onRemoved.addListener(function(tabId, info){
     }
 });
 
+// NOTE: this doesn't remove the tag from `globalTags`
+// if you want the tab to be removed you should do so manually
+// this behavior is intended (not a bug)
 function close_tab(tab)
 {
     try
     {
-        chrome.tabs.remove(parseInt(tab.id), function(){});
+        chrome.tabs.remove(tab.id, function(){});
     }
     catch (e)
     {
+        // NOTE: This probably doesn't work because async errors cannot
+        // be caught like this, needs further investigation.
         console.error('Error trying to close tab, retrying...', e);
         close_tab(tab);
         setTimeout(close_tab.bind(tab), 500);
     }
 };
 
-function close_tabs_with_same_url(tab)
+function delete_old_tabs_with_same_url(tab)
 {
+    // NOTE: this is a hack
+    // For some reason chrome is way to slow to send 'loading'
+    // notifications when trying to access a new url, this causes
+    // unwanted tabs to close when quickly opening a new tab after
+    // trying to go to a new site on a previous one
+    //
+    // This line fixes that problem by making an exception for 'newtabs'
     if (tab.url === 'chrome://newtab/') return;
 
     for (let id in globalTabs)
     {
-        if (globalTabs[id].url === tab.url && parseInt(id) !== tab.id)
+        if (globalTabs[id].url === tab.url && globalTabs[id].id !== tab.id)
         {
-            if (globalTabs[id].onWindow === true)
-            {
-                close_tab(globalTabs[id]);
-            }
-            else
+            if (!globalTabs[id].onWindow)
             {
                 delete globalTabs[id];
             }
@@ -114,11 +158,21 @@ function close_tabs_with_same_url(tab)
 
 function store_new_tab(tab)
 {
+    // initialize tab data
     tab.time = 0;
     tab.onWindow = true;
     globalTabs[tab.id] = tab;
 
-    close_tabs_with_same_url(tab);
+    // handle duplication
+    delete_old_tabs_with_same_url(tab);
+    let duplicate = get_duplicated_tab(tab);
+    if (duplicate !== null)
+    {
+        // TODO: create a function to switch tab, stop using this everywhere
+        chrome.tabs.update(duplicate.id, {active: true});
+        close_tab(tab);
+        delete globalTabs[tab.id];
+    }
 };
 
 chrome.tabs.onCreated.addListener((tab) => store_new_tab(tab));
@@ -140,14 +194,10 @@ chrome.tabs.onActivated.addListener(function(info) {
     };
 });
 
-function getGlobalTabs(){
-    return globalTabs;
-};
-
 function iconClick(tab){
     if (globalTabs[tab].onWindow)
     {
-        chrome.tabs.update(parseInt(tab), {active: true});
+        chrome.tabs.update(globalTabs[tab].id, {active: true});
     }
     else
     {
@@ -157,7 +207,7 @@ function iconClick(tab){
             tabn.time = 0;
             tabn.onWindow = true;
             globalTabs[tabn.id] = tabn;
-            delete globalTabs[tab]
+            delete globalTabs[tab];
         });
     }
 };
