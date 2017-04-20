@@ -161,8 +161,8 @@ function store_new_tab(tab)
 }
 
 function update_popup_list(){
-    let prop = {}
-    prop.type = "popup";
+    let prop = {};
+    prop.type = 'popup';
     let array = chrome.extension.getViews(prop);
     if(typeof array[0] != 'undefined'){
         array[0].update_list();
