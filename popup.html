@@ -1,12 +1,25 @@
 <html>
-<head>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-  <script src="popup.js"></script>
-</head>
-<body style="width: 400px; background-color: #ffbb77">
-  <div>Search Tabs:  <input id="search"></div>
-  <div style="height: 20px"></div>
-  <div id="list" style="display: table; width: 100%;">
-  </div>
-</body>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="popup.js"></script>
+        <link rel="stylesheet" href="lib/material.min.css">
+        <script src="lib/material.min.js"></script>
+    </head>
+    <body style="width: 400px;">
+        <!-- Expandable Textfield -->
+        <div style="position: relative; height: 50px;">
+            <div style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%);" class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+                <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
+                    <img src="lib/search.svg" alt="Search">
+                </label>
+                <div class="mdl-textfield__expandable-holder">
+                    <input class="mdl-textfield__input" type="text" id="search">
+                    <label class="mdl-textfield__label" for="sample-expandable">Expandable Input</label>
+                </div>
+            </div>
+        </div>
+        <div style="height: 20px"></div>
+        <div id="list" style="display: table; width: 100%;">
+        </div>
+    </body>
 </html>
