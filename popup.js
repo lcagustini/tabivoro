@@ -18,7 +18,6 @@ function update_time(){
     let globalTabs = bsPage.getGlobalTabs();
 
     for(let tab in globalTabs){
-        console.log(globalTabs[tab].time);
         $('#clock'+tab).text(formatSeconds(Math.round(globalTabs[tab].time)));
     }
 
