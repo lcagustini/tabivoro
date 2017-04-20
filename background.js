@@ -61,12 +61,21 @@ function init()
         for(let tab of tabs){
             tab.time = 0;
             tab.onWindow = true;
+            tab.hover = false;
             globalTabs[tab.id] = tab;
         }
 
         // then start updating
         update();
     });
+}
+
+function set_hover(tabId, bol){
+    globalTabs[tabId].hover = bol;
+} 
+
+function get_hover(tabId){
+    return globalTabs[tabId].hover;
 }
 
 function get_duplicated_tab(tab)
@@ -138,6 +147,7 @@ function store_new_tab(tab)
     // initialize tab data
     tab.time = 0;
     tab.onWindow = true;
+    tab.hover = false;
     globalTabs[tab.id] = tab;
 
     // handle duplication

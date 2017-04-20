@@ -25,7 +25,10 @@ function update()
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
             let row = document.createElement('span');
             row.style = 'width: 350px;';
-            row.className = "mdl-chip mdl-chip--contact mdl-chip--deletable";
+            if(bsPage.get_hover(tab))
+                row.className = "row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--blue-grey-200";
+            else
+                row.className = "row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--blue-grey-100";
 
             let left = document.createElement('div');
             left.style = "float: left";
@@ -66,15 +69,30 @@ function update()
 
             row.id = tab;
         }
+
         $('#close'+tab).click(function(){
             bsPage.close_tab(globalTabs[tab]);
         });
+
         $('#'+tab).click(function(){
             bsPage.on_clicked(tab);
         });
+
+        $('#'+tab).hover(function(){
+            bsPage.set_hover(tab, true);
+        }, function(){
+            bsPage.set_hover(tab, false);
+        });
     }
 
-    setTimeout(update, 1000);
+    setTimeout(update, 400);
 }
 
 window.onload = update;
+window.onunload = function(){
+    let bsPage = chrome.extension.getBackgroundPage();
+    let globalTabs = bsPage.getGlobalTabs();
+    for(let tab in globalTabs) {
+        bsPage.set_hover(tab, false);
+    }
+};
