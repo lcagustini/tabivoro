@@ -70,14 +70,6 @@ function init()
     });
 }
 
-function set_hover(tabId, bol){
-    globalTabs[tabId].hover = bol;
-} 
-
-function get_hover(tabId){
-    return globalTabs[tabId].hover;
-}
-
 function get_duplicated_tab(tab)
 {
     // NOTE: this is a hack
