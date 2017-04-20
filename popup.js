@@ -37,7 +37,7 @@ function update_list()
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
             let row = document.createElement('button');
             row.style = 'width: 350px;';
-            row.className = 'row mdl-button mdl-js-button mdl-chip mdl-chip--contact mdl-chip--deletable mdl-js-ripple-effect mdl-shadow--3dp';
+            row.className = 'row mdl-button mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp';
             if(globalTabs[tab].onWindow)
                 row.className += ' mdl-color--blue-grey-100';
             else
