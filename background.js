@@ -5,10 +5,14 @@ function getGlobalTabs(){
     return globalTabs;
 }
 
+function goto_tab(tabId){
+    chrome.tabs.update(tabId, {active: true});
+}
+
 function on_clicked(id) {
     if (globalTabs[id].onWindow)
     {
-        chrome.tabs.update(globalTabs[id].id, {active: true});
+        goto_tab(globalTabs[id].id);
     }
     else
     {
@@ -99,7 +103,7 @@ function close_tab(tab)
 {
     try
     {
-        chrome.tabs.remove(tab.id, function(){});
+        if(tab.onWindow) chrome.tabs.remove(tab.id, function(){});
     }
     catch (e)
     {
@@ -147,10 +151,18 @@ function store_new_tab(tab)
     let duplicate = get_duplicated_tab(tab);
     if (duplicate !== null)
     {
-        // TODO: create a function to switch tab, stop using this everywhere
-        chrome.tabs.update(duplicate.id, {active: true});
+        goto_tab(duplicate.id);
         close_tab(tab);
         delete globalTabs[tab.id];
+    }
+}
+
+function update_popup_list(){
+    let prop = {}
+    prop.type = "popup";
+    let array = chrome.extension.getViews(prop);
+    if(typeof array[0] != 'undefined'){
+        array[0].update_list();
     }
 }
 
@@ -173,11 +185,11 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
     let duplicate = get_duplicated_tab(tab);
     if (duplicate !== null)
     {
-        // TODO: create a function to switch tab, stop using this everywhere
-        chrome.tabs.update(duplicate.id, {active: true});
+        goto_tab(duplicate.id);
         close_tab(tab);
         delete globalTabs[tabId];
     }
+    update_popup_list();
 });
 
 chrome.tabs.onRemoved.addListener(function(tabId, info){
@@ -193,13 +205,18 @@ chrome.tabs.onRemoved.addListener(function(tabId, info){
                 delete globalTabs[tab];
         }
     }
+    update_popup_list();
 });
 
-chrome.tabs.onCreated.addListener((tab) => store_new_tab(tab));
+chrome.tabs.onCreated.addListener(function(tab){
+    store_new_tab(tab);
+    update_popup_list();
+});
 
 chrome.tabs.onReplaced.addListener(function(added_tab_id, removed_tab_id) {
     delete globalTabs[removed_tab_id];
     chrome.tabs.get(added_tab_id, (tab) => store_new_tab(tab));
+    update_popup_list();
 });
 
 chrome.tabs.onActivated.addListener(function(info) {

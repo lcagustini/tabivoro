@@ -3,6 +3,7 @@ let globalSearch = '';
 $(function() {
     $('#search').change(function() {
         globalSearch = $('#search').val().toLowerCase();
+        update_list();
     });
 });
 
@@ -12,7 +13,19 @@ function formatSeconds(seconds){
     return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
 }
 
-function update()
+function update_time(){
+    let bsPage = chrome.extension.getBackgroundPage();
+    let globalTabs = bsPage.getGlobalTabs();
+
+    for(let tab in globalTabs){
+        console.log(globalTabs[tab].time);
+        $('#clock'+tab).text(formatSeconds(Math.round(globalTabs[tab].time)));
+    }
+
+    setTimeout(update_time, 1000);
+}
+
+function update_list()
 {
     let bsPage = chrome.extension.getBackgroundPage();
     let globalTabs = bsPage.getGlobalTabs();
@@ -50,6 +63,7 @@ function update()
             right.style = 'float: right;';
 
             let clock = document.createElement('span');
+            clock.id = 'clock'+tab;
             clock.className = 'mdl-chip__text';
             clock.innerHTML = formatSeconds(Math.round(globalTabs[tab].time));
 
@@ -77,6 +91,7 @@ function update()
         $('#close'+tab).click(function(){
             bsPage.close_tab(globalTabs[tab]);
             delete globalTabs[tab];
+            update_list();
         });
 
         $('#'+tab).click(function(){
@@ -84,12 +99,11 @@ function update()
         });
 
     }
-
-    setTimeout(update, 1000);
 }
 
-window.onload = update;
-window.onunload = function(){
-    let bsPage = chrome.extension.getBackgroundPage();
-    let globalTabs = bsPage.getGlobalTabs();
-};
+function init(){
+    update_list();
+    update_time();
+}
+
+window.onload = init;
