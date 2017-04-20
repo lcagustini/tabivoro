@@ -62,15 +62,18 @@ function init()
     // initialize tabs
     //TODO: restore time when browser reopens
     chrome.tabs.query({}, function(tabs){
-        for(let tab of tabs){
-            tab.time = 0;
-            tab.onWindow = true;
-            tab.hover = false;
-            globalTabs[tab.id] = tab;
-        }
+        chrome.storage.local.get(null, function(items){
+            globalTabs = items;
+            for(let tab of tabs){
+                tab.time = 0;
+                tab.onWindow = true;
+                tab.hover = false;
+                globalTabs[tab.id] = tab;
+            }
 
-        // then start updating
-        update();
+            // then start updating
+            update();
+        });
     });
 }
 

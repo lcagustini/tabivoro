@@ -36,12 +36,13 @@ function update_list()
 
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
-            let row = document.createElement('span');
+            let row = document.createElement('button');
             row.style = 'width: 350px;';
+            row.className = 'row mdl-button mdl-js-button mdl-chip mdl-chip--contact mdl-chip--deletable mdl-js-ripple-effect mdl-shadow--3dp';
             if(globalTabs[tab].onWindow)
-                row.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--blue-grey-100';
+                row.className += ' mdl-color--blue-grey-100';
             else
-                row.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--red-200';
+                row.className += ' mdl-color--red-200';
 
             let left = document.createElement('div');
             left.style = 'float: left';
@@ -52,10 +53,11 @@ function update_list()
             if (icon_url && !(icon_url.includes('chrome://')))
                 icon.src = icon_url;
             else
-                icon.src = 'lib/blank.png';
+                icon.src = 'lib/blank.svg';
 
             let title = document.createElement('span');
             title.className = 'mdl-chip__text';
+            title.style = "white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;"
             title.innerHTML = globalTabs[tab].title;
 
             left.appendChild(icon);
@@ -84,16 +86,24 @@ function update_list()
             row.id = tab;
 
             row.onmouseover = function() {
-                if(globalTabs[tab].onWindow)
-                    this.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--blue-grey-200';
-                else
-                    this.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--red-300';
+                if(globalTabs[tab].onWindow){
+                    $(this).removeClass("mdl-color--blue-grey-100");
+                    $(this).addClass("mdl-color--blue-grey-200");
+                }
+                else{
+                    $(this).removeClass("mdl-color--red-200");
+                    $(this).addClass("mdl-color--red-300");
+                }
             };
             row.onmouseout = function() {
-                if(globalTabs[tab].onWindow)
-                    this.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--blue-grey-100';
-                else
-                    this.className = 'row mdl-chip mdl-chip--contact mdl-chip--deletable mdl-shadow--3dp mdl-color--red-200';
+                if(globalTabs[tab].onWindow){
+                    $(this).removeClass("mdl-color--blue-grey-200");
+                    $(this).addClass("mdl-color--blue-grey-100");
+                }
+                else{
+                    $(this).removeClass("mdl-color--red-300");
+                    $(this).addClass("mdl-color--red-200");
+                }
             };
         }
 
