@@ -10,7 +10,7 @@
         <div style="position: relative; height: 50px;">
             <div style="position: absolute; top: 50%; left: 50%; margin-right: -50%; transform: translate(-50%, -50%);" class="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
                 <label class="mdl-button mdl-js-button mdl-button--icon" for="search">
-                    <img src="lib/search.svg" alt="Search">
+                    <img style="position: relative; top: 4px;" src="lib/search.svg" alt="Search">
                 </label>
                 <div class="mdl-textfield__expandable-holder">
                     <input class="mdl-textfield__input" type="text" id="search">
@@ -18,8 +18,17 @@
                 </div>
             </div>
         </div>
-        <div style="height: 20px"></div>
-        <div id="list" style="display: table; width: 100%;">
+        <div id="list" style="text-align: center;">
+            <span style="width: 350px;" class="mdl-chip mdl-chip--contact mdl-chip--deletable">
+                <div style="float: left;">
+                    <img class="mdl-chip__contact" src="https://hp.imguol.com.br/c/home/layout/camaleao/web/gerais/favicon.ico"></img>
+                    <span class="mdl-chip__text">UOL - O melhor conteudo</span>
+                </div>
+                <div style="float: right;">
+                    <span class="mdl-chip__text">00:00:00</span>
+                    <img class="mdl-chip__action" src="lib/cancel.svg" alt="Cancel">
+                </div>
+            </span>
         </div>
     </body>
 </html>

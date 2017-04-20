@@ -23,39 +23,52 @@ function update()
 
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
-            let row = document.createElement('div');
-            row.style = 'width: 100%; height: 22px; display: table-row;';
+            let row = document.createElement('span');
+            row.style = 'width: 350px;';
+            row.className = "mdl-chip mdl-chip--contact mdl-chip--deletable";
 
-            let el = document.createElement('label');
+            let left = document.createElement('div');
+            left.style = "float: left";
+
             let icon_url = globalTabs[tab].favIconUrl;
-            if (icon_url && !(icon_url.includes('chrome://'))) el.style = 'display: table-cell; background-position: top; background-image: url(' + icon_url + '); min-width: 30px; height: 22px; background-size: 22px; background-repeat: no-repeat;';
-            else el.style = 'display: table-cell; min-width: 30px; height: 22px;';
-            row.appendChild(el);
-
-            let wrapper = document.createElement('div');
-            wrapper.style = 'display: table-cell; width = 100%; height = 22px;';
-            el = document.createElement('label');
-            if(globalTabs[tab].onWindow)
-                el.style = 'display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 250px; height: 22px; margin-top: 2px;';
+            let icon = document.createElement('img');
+            icon.className = "mdl-chip__contact";
+            if (icon_url && !(icon_url.includes('chrome://')))
+                icon.src = icon_url;
             else
-                el.style = 'display: block; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; width: 250px; height: 22px; color: red; margin-top: 2px;';
-            let textNode = document.createTextNode(globalTabs[tab].title);
-            el.appendChild(textNode);
-            wrapper.appendChild(el);
-            row.appendChild(wrapper);
+                icon.src = "lib/blank.png";
 
-            el = document.createElement('label');
-            el.style = 'display: table-cell; text-align: right; min-width: 90px !important; height: 22px; margin-top: 2px;';
-            textNode = document.createTextNode(formatSeconds(Math.round(globalTabs[tab].time)));
-            el.appendChild(textNode);
-            row.appendChild(el);
+            let title = document.createElement('span');
+            title.className = "mdl-chip__text";
+            title.innerHTML = globalTabs[tab].title;
+
+            left.appendChild(icon);
+            left.appendChild(title);
+            row.appendChild(left);
+
+            let right = document.createElement('div');
+            right.style = "float: right;";
+
+            let clock = document.createElement('span');
+            clock.className = "mdl-chip__text";
+            clock.innerHTML = formatSeconds(Math.round(globalTabs[tab].time));
+
+            let cancel = document.createElement('img');
+            cancel.src = "lib/cancel.svg";
+            cancel.className = "mdl-chip__action";
+            cancel.id = "close"+tab;
+
+            right.appendChild(clock);
+            right.appendChild(cancel);
+            row.appendChild(right);
 
             list.appendChild(row);
 
             row.id = tab;
-            row.onmouseover = function() { this.style.backgroundColor = '#ee9955'; };
-            row.onmouseout = function() { this.style.backgroundColor = '#ffbb77'; };
         }
+        $('#close'+tab).click(function(){
+            bsPage.close_tab(globalTabs[tab]);
+        });
         $('#'+tab).click(function(){
             bsPage.on_clicked(tab);
         });
