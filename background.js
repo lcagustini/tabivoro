@@ -60,20 +60,27 @@ function update()
 function init()
 {
     // initialize tabs
-    //TODO: restore time when browser reopens
     chrome.tabs.query({}, function(tabs){
-        chrome.storage.local.get(null, function(items){
-            globalTabs = items;
-            for(let tab of tabs){
+        globalTabs = {};
+        for(let tab of tabs){
+            tab.time = 0;
+            tab.onWindow = true;
+            globalTabs[tab.id] = tab;
+        }
+        if (localStorage['tabs'])
+        {
+            let previous_tabs = JSON.parse(localStorage['tabs']);
+            for (let id in previous_tabs)
+            {
+                let tab = previous_tabs[id];
+
                 tab.time = 0;
-                tab.onWindow = true;
-                tab.hover = false;
                 globalTabs[tab.id] = tab;
             }
+        }
 
-            // then start updating
-            update();
-        });
+        // then start updating
+        update();
     });
 }
 
@@ -146,7 +153,6 @@ function store_new_tab(tab)
     // initialize tab data
     tab.time = 0;
     tab.onWindow = true;
-    tab.hover = false;
     globalTabs[tab.id] = tab;
 
     // handle duplication
@@ -167,6 +173,9 @@ function update_popup_list(){
     if(typeof array[0] != 'undefined'){
         array[0].update_list();
     }
+
+    localStorage.clear();
+    localStorage['tabs'] = JSON.stringify(globalTabs);
 }
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {

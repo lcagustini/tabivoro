@@ -56,7 +56,7 @@ function update_list()
 
             let title = document.createElement('span');
             title.className = 'mdl-chip__text';
-            title.style = "white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;"
+            title.style = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;';
             title.innerHTML = globalTabs[tab].title;
 
             left.appendChild(icon);
@@ -86,22 +86,22 @@ function update_list()
 
             row.onmouseover = function() {
                 if(globalTabs[tab].onWindow){
-                    $(this).removeClass("mdl-color--blue-grey-100");
-                    $(this).addClass("mdl-color--blue-grey-200");
+                    $(this).removeClass('mdl-color--blue-grey-100');
+                    $(this).addClass('mdl-color--blue-grey-200');
                 }
                 else{
-                    $(this).removeClass("mdl-color--red-200");
-                    $(this).addClass("mdl-color--red-300");
+                    $(this).removeClass('mdl-color--red-200');
+                    $(this).addClass('mdl-color--red-300');
                 }
             };
             row.onmouseout = function() {
                 if(globalTabs[tab].onWindow){
-                    $(this).removeClass("mdl-color--blue-grey-200");
-                    $(this).addClass("mdl-color--blue-grey-100");
+                    $(this).removeClass('mdl-color--blue-grey-200');
+                    $(this).addClass('mdl-color--blue-grey-100');
                 }
                 else{
-                    $(this).removeClass("mdl-color--red-300");
-                    $(this).addClass("mdl-color--red-200");
+                    $(this).removeClass('mdl-color--red-300');
+                    $(this).addClass('mdl-color--red-200');
                 }
             };
         }
@@ -109,7 +109,7 @@ function update_list()
         $('#close'+tab).click(function(){
             bsPage.close_tab(globalTabs[tab]);
             delete globalTabs[tab];
-            update_list();
+            bsPage.update_popup_list();
         });
 
         $('#'+tab).click(function(){
