@@ -39,19 +39,26 @@ function update()
     let dt = t - globalT;
     globalT = t;
 
-    // show how many tabs we're keeping track of
-    let badge = {};
-    badge.text = Object.keys(globalTabs).length.toString();
-    chrome.browserAction.setBadgeText(badge);
+    // check if browser was supended
+    // and if so, don't update the timers
+    if (dt < 10000)
+    {
+        // show how many tabs we're keeping track of
+        let badge = {};
+        badge.text = Object.keys(globalTabs).length.toString();
+        chrome.browserAction.setBadgeText(badge);
 
-    for(let tab in globalTabs){
-        if(!globalTabs[tab].active)
-            globalTabs[tab].time += dt / 1000;
+        for(let tab in globalTabs){
+            if(!globalTabs[tab].active)
+            {
+                globalTabs[tab].time += dt / 1000;
+            }
 
-        if(Object.keys(globalConfig).length !== 0 && globalTabs[tab].time > globalConfig['max_unused_tab_timer'] && globalTabs[tab].onWindow)
-        {
-            close_tab(globalTabs[tab]);
-            globalTabs[tab].onWindow = false;
+            if(Object.keys(globalConfig).length !== 0 && globalTabs[tab].time > globalConfig['max_unused_tab_timer'] && globalTabs[tab].onWindow)
+            {
+                close_tab(globalTabs[tab]);
+                globalTabs[tab].onWindow = false;
+            }
         }
     }
 
@@ -61,7 +68,6 @@ function update()
 function init()
 {
     // read config file
-    console.log("INIIIIIIIIIIIIT");
 	var xhr = new XMLHttpRequest;
 	xhr.open("GET", chrome.runtime.getURL("tabivoro.conf"));
 	xhr.onreadystatechange = function() {
@@ -72,7 +78,6 @@ function init()
             {
                 for (let id in globalTabs)
                 {
-                    console.log(globalConfig);
                     if (!globalConfig['persistent_timer'])
                     {
                         globalTabs[id].time = 0;
