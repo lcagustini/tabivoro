@@ -1,5 +1,6 @@
 let globalTabs = {};
 let globalT = 0;
+let globalConfig = {};
 
 function getGlobalTabs(){
     return globalTabs;
@@ -47,7 +48,7 @@ function update()
         if(!globalTabs[tab].active)
             globalTabs[tab].time += dt / 1000;
 
-        if(globalTabs[tab].time > 20 && globalTabs[tab].onWindow)
+        if(Object.keys(globalConfig).length !== 0 && globalTabs[tab].time > globalConfig['max_unused_tab_timer'] && globalTabs[tab].onWindow)
         {
             close_tab(globalTabs[tab]);
             globalTabs[tab].onWindow = false;
@@ -59,9 +60,31 @@ function update()
 
 function init()
 {
+    // read config file
+    console.log("INIIIIIIIIIIIIT");
+	var xhr = new XMLHttpRequest;
+	xhr.open("GET", chrome.runtime.getURL("tabivoro.conf"));
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4) {
+			globalConfig = JSON.parse(xhr.responseText);
+
+            if (Object.keys(globalTabs).length !== 0)
+            {
+                for (let id in globalTabs)
+                {
+                    console.log(globalConfig);
+                    if (!globalConfig['persistent_timer'])
+                    {
+                        globalTabs[id].time = 0;
+                    }
+                }
+            }
+        }
+    };
+    xhr.send();
+
     // initialize tabs
     chrome.tabs.query({}, function(tabs){
-        globalTabs = {};
         for(let tab of tabs){
             tab.time = 0;
             tab.onWindow = true;
@@ -74,7 +97,13 @@ function init()
             {
                 let tab = previous_tabs[id];
 
-                tab.time = 0;
+                if (Object.keys(globalConfig).length !== 0)
+                {
+                    if (!globalConfig['persistent_timer'])
+                    {
+                        tab.time = 0;
+                    }
+                }
                 globalTabs[tab.id] = tab;
             }
         }
