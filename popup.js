@@ -1,5 +1,6 @@
 let globalSearch = '';
 
+// get search information
 $(function() {
     $('#search').change(function() {
         globalSearch = $('#search').val().toLowerCase();
@@ -7,12 +8,14 @@ $(function() {
     });
 });
 
+// formats seconds to hh:mm:ss
 function formatSeconds(seconds){
     let date = new Date(1970,0,1);
     date.setSeconds(seconds);
     return date.toTimeString().replace(/.*(\d{2}:\d{2}:\d{2}).*/, '$1');
 }
 
+// updates only the displayed time on the list
 function update_time(){
     let bsPage = chrome.extension.getBackgroundPage();
     let globalTabs = bsPage.getGlobalTabs();
@@ -24,12 +27,14 @@ function update_time(){
     setTimeout(update_time, 1000);
 }
 
+// updates the whole list of tabs
 function update_list()
 {
     let bsPage = chrome.extension.getBackgroundPage();
     let globalTabs = bsPage.getGlobalTabs();
     let windows = [];
 
+    // creates a div for each window
     for(let id in globalTabs){
         if($.inArray(globalTabs[id].windowId, windows) === -1)
             windows[windows.length] = globalTabs[id].windowId;
@@ -45,6 +50,7 @@ function update_list()
         list.appendChild(win);
     }
 
+    // generates all the tabs elements
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
             let row = document.createElement('button');
@@ -64,7 +70,7 @@ function update_list()
             if (icon_url && !(icon_url.includes('chrome://')))
                 icon.src = icon_url;
             else
-                icon.src = 'lib/blank.svg';
+                icon.src = 'assets/blank.svg';
 
             let title = document.createElement('span');
             title.className = 'mdl-chip__text';
@@ -84,7 +90,7 @@ function update_list()
             clock.innerHTML = formatSeconds(Math.round(globalTabs[tab].time));
 
             let cancel = document.createElement('img');
-            cancel.src = 'lib/cancel.svg';
+            cancel.src = 'assets/cancel.svg';
             cancel.className = 'mdl-chip__action';
             cancel.id = 'close'+tab;
 

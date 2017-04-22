@@ -21,6 +21,7 @@ function goto_tab(tabId){
     chrome.windows.update(globalTabs[tabId].windowId, {focused: true});
 }
 
+// Goes to the clicked tabs or creates it if it's been auto-closed
 function on_clicked(id) {
     if (globalTabs[id].onWindow)
     {
@@ -59,6 +60,7 @@ function update()
         badge.text = Object.keys(globalTabs).length.toString();
         chrome.browserAction.setBadgeText(badge);
 
+        // updates time and auto-closes tabs
         for(let tab in globalTabs){
             if(!globalTabs[tab].active)
             {
@@ -209,6 +211,7 @@ function store_new_tab(tab)
     }
 }
 
+// updates tab list displayed on the popup window
 function update_popup_list(){
     let prop = {};
     prop.type = 'popup';
