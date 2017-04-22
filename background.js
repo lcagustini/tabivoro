@@ -6,6 +6,16 @@ function getGlobalTabs(){
     return globalTabs;
 }
 
+function getGlobalConfig(){
+    return globalConfig;
+}
+
+function setConfig(name, value){
+    globalConfig[name] = value;
+
+    chrome.storage.local.set(globalConfig);
+}
+
 function goto_tab(tabId){
     chrome.tabs.update(tabId, {active: true});
 }
@@ -68,25 +78,19 @@ function update()
 function init()
 {
     // read config file
-	var xhr = new XMLHttpRequest;
-	xhr.open("GET", chrome.runtime.getURL("tabivoro.conf"));
-	xhr.onreadystatechange = function() {
-		if (this.readyState == 4) {
-			globalConfig = JSON.parse(xhr.responseText);
-
-            if (Object.keys(globalTabs).length !== 0)
+    chrome.storage.local.get(null, function(items){
+        globalConfig = items;
+        if (Object.keys(globalTabs).length !== 0)
+        {
+            for (let id in globalTabs)
             {
-                for (let id in globalTabs)
+                if (!globalConfig['persistent_timer'])
                 {
-                    if (!globalConfig['persistent_timer'])
-                    {
-                        globalTabs[id].time = 0;
-                    }
+                    globalTabs[id].time = 0;
                 }
             }
         }
-    };
-    xhr.send();
+    });
 
     // initialize tabs
     chrome.tabs.query({}, function(tabs){

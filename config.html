@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <script src="lib/jquery.min.js"></script>
+        <script src="config.js"></script>
+        <link rel="stylesheet" href="lib/material.min.css">
+        <script src="lib/material.min.js"></script>
+        <style>
+            .mdl-button {    
+                text-transform: none !important;
+            }
+        </style>
+    </head>
+    <body style="width: 400px;">
+        <div style="position: relative; height: 50px;">
+            <div style="position: absolute; top: 50%; left: 5%; margin-right: -5%; transform: translate(-5%, -50%);">
+                <a href="popup.html" type="submit" class="mdl-button mdl-js-button mdl-button--icon mdl-js-ripple-effect">
+                    <img style="position: relative; top: 4px;" src="lib/back.svg" alt="Config">
+                </a>
+            </div>
+        </div>
+        <ul class="mdl-list">
+            <li class="mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                    <img src="lib/persistent.svg" style="margin-right: 10px;">
+                    Store closed timers
+                </span>
+                <span class="mdl-list__item-secondary-action" style="margin-right: 20px;">
+                    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="pers">
+                        <input type="checkbox" id="pers" class="mdl-switch__input" checked />
+                    </label>
+                </span>
+            </li>
+            <li class="mdl-list__item">
+                <span class="mdl-list__item-primary-content">
+                    <img src="lib/timer.svg" style="margin-right: 10px;">
+                    Maximum time open
+                </span>
+                <span class="mdl-list__item-secondary-action">
+                    <form action="#" style="width: 100px; position: relative; top: 6px;">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="sec">
+                            <label class="mdl-textfield__label" for="sec">Seconds</label>
+                            <span class="mdl-textfield__error">Input is not a number!</span>
+                        </div>
+                    </form>
+                </span>
+            </li>
+        </ul>
+    </body>
+</html>
