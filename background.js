@@ -113,6 +113,10 @@ function init()
                         tab.time = 0;
                     }
                 }
+                else{
+                    setConfig('persistent_timer', true);
+                    setConfig('max_unused_tab_timer', 5400);
+                }
                 globalTabs[tab.id] = tab;
             }
         }
