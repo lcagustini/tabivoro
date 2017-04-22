@@ -18,6 +18,7 @@ function setConfig(name, value){
 
 function goto_tab(tabId){
     chrome.tabs.update(tabId, {active: true});
+    chrome.windows.update(globalTabs[tabId].windowId, {focused: true});
 }
 
 function on_clicked(id) {

@@ -28,10 +28,22 @@ function update_list()
 {
     let bsPage = chrome.extension.getBackgroundPage();
     let globalTabs = bsPage.getGlobalTabs();
+    let windows = [];
+
+    for(let id in globalTabs){
+        if($.inArray(globalTabs[id].windowId, windows) === -1)
+            windows[windows.length] = globalTabs[id].windowId;
+    }
 
     let list = document.getElementById('list');
-
     list.innerHTML = '';
+
+    for(let wId in windows){
+        let win = document.createElement('div');
+        win.style = 'text-align: center; margin-bottom: 12px;';
+        win.id = 'win'+windows[wId]
+        list.appendChild(win);
+    }
 
     for(let tab in globalTabs) {
         if(globalTabs[tab].title.toLowerCase().search(globalSearch) != -1){
@@ -80,10 +92,7 @@ function update_list()
             right.appendChild(cancel);
             row.appendChild(right);
 
-            list.appendChild(row);
-
             row.id = tab;
-
             row.onmouseover = function() {
                 if(globalTabs[tab].onWindow){
                     $(this).removeClass('mdl-color--blue-grey-100');
@@ -104,6 +113,7 @@ function update_list()
                     $(this).addClass('mdl-color--red-200');
                 }
             };
+            $('#win'+globalTabs[tab].windowId).append(row);
         }
 
         $('#close'+tab).click(function(){
@@ -115,7 +125,6 @@ function update_list()
         $('#'+tab).click(function(){
             bsPage.on_clicked(tab);
         });
-
     }
 }
 
