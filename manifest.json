@@ -1,19 +1,22 @@
 {
-  "name": "Tabivoro",
-  "version": "0.1",
-  "description": "A tab management extension that will eat your tabs.",
-  "permissions": [
-    "storage",
-    "tabs"
-  ],
-  "background": {
-    "scripts": ["background.js"]
-  },
-  "browser_action": {
-      "default_title": "Tabivoro",
-      "default_icon": "icon.png",
-      "default_popup": "popup.html"
-  },
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
+    "name": "Tabivoro",
+    "version": "1.0",
+    "description": "A tab management extension that will eat your tabs.",
+    "icons": { "48": "assets/icon.png",
+               "128": "assets/icon.png"
+    },
+    "permissions": [
+        "storage",
+        "tabs"
+    ],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "browser_action": {
+        "default_title": "Tabivoro",
+        "default_icon": "assets/icon.png",
+        "default_popup": "popup.html"
+    },
+    "manifest_version": 2,
+    "content_security_policy": "script-src 'self' https://ajax.googleapis.com; object-src 'self'"
 }
