@@ -69,8 +69,10 @@ function update()
 
             if(Object.keys(globalConfig).length !== 0 && globalTabs[tab].time > globalConfig['max_unused_tab_timer'] && globalTabs[tab].onWindow)
             {
+                console.log(globalTabs[tab].time);
                 close_tab(globalTabs[tab]);
                 globalTabs[tab].onWindow = false;
+                globalTabs[tab].windowId = chrome.windows.WINDOW_ID_NONE;
             }
         }
     }
@@ -100,7 +102,8 @@ function init()
         for(let tab of tabs){
             tab.time = 0;
             tab.onWindow = true;
-            globalTabs[tab.id] = tab;
+            if(!tab.pinned)
+                globalTabs[tab.id] = tab;
         }
         if (localStorage['tabs'])
         {
