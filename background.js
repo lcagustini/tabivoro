@@ -69,7 +69,6 @@ function update()
 
             if(Object.keys(globalConfig).length !== 0 && globalTabs[tab].time > globalConfig['max_unused_tab_timer'] && globalTabs[tab].onWindow)
             {
-                console.log(globalTabs[tab].time);
                 close_tab(globalTabs[tab]);
                 globalTabs[tab].onWindow = false;
                 globalTabs[tab].windowId = chrome.windows.WINDOW_ID_NONE;
@@ -224,17 +223,30 @@ function update_popup_list(){
     }
 
     localStorage.clear();
-    localStorage['tabs'] = JSON.stringify(globalTabs);
+    let closedTabs = {}
+    for(let tab in globalTabs){
+        if(!globalTabs[tab].onWindow){
+            closedTabs[tab] = globalTabs[tab];
+        }
+    }
+    console.log(closedTabs);
+    localStorage['tabs'] = JSON.stringify(closedTabs);
 }
 
 chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
 
     // wait for page to load completely
-    if (info.status !== 'loading' && info.status !== 'complete') return;
+    if (info.status !== 'loading' && info.status !== 'complete'){
+        update_popup_list();
+        return;
+    }
 
     // if tab was closed already, do nothing
-    if (!globalTabs[tabId]) return;
-
+    if (!globalTabs[tabId]){
+        update_popup_list();
+        return;
+    }
+    
     // otherwise, update stored tab data
     tab.time = globalTabs[tabId].time;
     tab.onWindow = globalTabs[tabId].onWindow;

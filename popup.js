@@ -74,7 +74,7 @@ function update_list()
 
             let title = document.createElement('span');
             title.className = 'mdl-chip__text';
-            title.style = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 220px;';
+            title.style = 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 200px;';
             title.innerHTML = globalTabs[tab].title;
 
             left.appendChild(icon);
