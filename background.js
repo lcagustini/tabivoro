@@ -84,50 +84,39 @@ function init()
     // read config file
     chrome.storage.local.get(null, function(items){
         globalConfig = items;
-        if (Object.keys(globalTabs).length !== 0)
-        {
-            for (let id in globalTabs)
-            {
-                if (!globalConfig['persistent_timer'])
-                {
-                    globalTabs[id].time = 0;
-                }
+        // initialize tabs
+        chrome.tabs.query({}, function(tabs){
+            for(let tab of tabs){
+                tab.time = 0;
+                tab.onWindow = true;
+                if(!tab.pinned)
+                    globalTabs[tab.id] = tab;
             }
-        }
-    });
-
-    // initialize tabs
-    chrome.tabs.query({}, function(tabs){
-        for(let tab of tabs){
-            tab.time = 0;
-            tab.onWindow = true;
-            if(!tab.pinned)
-                globalTabs[tab.id] = tab;
-        }
-        if (localStorage['tabs'])
-        {
-            let previous_tabs = JSON.parse(localStorage['tabs']);
-            for (let id in previous_tabs)
+            if (localStorage['tabs'])
             {
-                let tab = previous_tabs[id];
-
-                if (Object.keys(globalConfig).length !== 0)
+                let previous_tabs = JSON.parse(localStorage['tabs']);
+                for (let id in previous_tabs)
                 {
-                    if (!globalConfig['persistent_timer'])
+                    let tab = previous_tabs[id];
+
+                    if (Object.keys(globalConfig).length !== 0)
                     {
-                        tab.time = 0;
+                        if (!globalConfig['persistent_timer'])
+                        {
+                            tab.time = 0;
+                        }
                     }
+                    else{
+                        setConfig('persistent_timer', true);
+                        setConfig('max_unused_tab_timer', 5400);
+                    }
+                    globalTabs[tab.id] = tab;
                 }
-                else{
-                    setConfig('persistent_timer', true);
-                    setConfig('max_unused_tab_timer', 5400);
-                }
-                globalTabs[tab.id] = tab;
             }
-        }
 
-        // then start updating
-        update();
+            // then start updating
+            update();
+        });
     });
 }
 
