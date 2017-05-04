@@ -235,7 +235,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, info, tab) {
         update_popup_list();
         return;
     }
-    
+
     // otherwise, update stored tab data
     tab.time = globalTabs[tabId].time;
     tab.onWindow = globalTabs[tabId].onWindow;

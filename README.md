@@ -15,5 +15,4 @@ A monster disguised as a browser extension. It will eat your tabs and perhaps sa
     Download it and add it to your browser via the extensions page. (i.e. `chrome://extensions`)
 
 ## Configuration
-The configuration file is `tabivoro.conf`.
-If you feel like changing some constants, that's where you should start.
+The default time for closing tabs is 5400s (1h30). This can be changed inside the extension popup.
