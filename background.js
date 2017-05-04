@@ -190,16 +190,6 @@ function store_new_tab(tab)
     tab.time = 0;
     tab.onWindow = true;
     globalTabs[tab.id] = tab;
-
-    // handle duplication
-    delete_old_tabs_with_same_url(tab);
-    let duplicate = get_duplicated_tab(tab);
-    if (duplicate !== null)
-    {
-        goto_tab(duplicate.id);
-        close_tab(tab);
-        delete globalTabs[tab.id];
-    }
 }
 
 // updates tab list displayed on the popup window
@@ -284,11 +274,13 @@ chrome.tabs.onReplaced.addListener(function(added_tab_id, removed_tab_id) {
 chrome.tabs.onActivated.addListener(function(info) {
     //TODO: handle ID changes when browser closes
     for(let tab in globalTabs){
-        globalTabs[tab].active = false;
-        if(globalTabs[tab].id === info.tabId)
-        {
-            globalTabs[tab].active = true;
-            globalTabs[tab].time = 0;
+        if(globalTabs[tab].windowId === info.windowId){
+            globalTabs[tab].active = false;
+            if(globalTabs[tab].id === info.tabId)
+            {
+                globalTabs[tab].active = true;
+                globalTabs[tab].time = 0;
+            }
         }
     }
 });
